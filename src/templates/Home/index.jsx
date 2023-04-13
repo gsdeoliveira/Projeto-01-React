@@ -14,73 +14,55 @@ export const Home = () => {
 
   const noMorePosts = page + postsPerPage >= allPosts.length;
 
-  const filteredPosts = !!searchValue ? 
+  const filteredPosts = searchValue
+    ? allPosts.filter((post) => {
+        return post.title.toLowerCase().includes(searchValue.toLowerCase());
+      })
+    : posts;
 
-  allPosts.filter(post => {
-    return post.title.toLowerCase().includes(searchValue.toLowerCase());
-  })
-  : posts;
-
-  
   const handleLoadPosts = useCallback(async (page, postsPerPage) => {
     const postsAndPhotos = await loadPosts();
-    
+
     setPosts(postsAndPhotos.slice(page, postsPerPage));
     setAllPosts(postsAndPhotos);
-  }, [])
+  }, []);
 
   useEffect(() => {
     handleLoadPosts(0, postsPerPage);
   }, [handleLoadPosts, postsPerPage]);
 
-const loadMorePosts = () => {
+  const loadMorePosts = () => {
+    const nextPage = page + postsPerPage;
+    const nextPosts = allPosts.slice(nextPage, nextPage + postsPerPage);
+    posts.push(...nextPosts);
 
-const nextPage = page + postsPerPage;
-const nextPosts = allPosts.slice(nextPage, nextPage + postsPerPage);
-posts.push(...nextPosts);
+    setPosts(posts);
+    setPage(nextPage);
+  };
 
-setPosts(posts);
-setPage(nextPage);
-}
+  const handleChange = (e) => {
+    const { value } = e.target;
 
-const handleChange = (e) => {
-const { value } = e.target;
+    setSearchValue(value);
+  };
 
-setSearchValue(value);
-}
+  return (
+    <section className="container">
+      <div className="search-container">
+        {!!searchValue && <h1>Search Value: {searchValue}</h1>}
 
+        <TextInput searchValue={searchValue} handleChange={handleChange} />
+      </div>
 
-return (
-  <section className='container'>
+      {filteredPosts.length === 0 && <p>No posts found</p>}
 
-    <div className="search-container">
-    {!!searchValue && (
-    <h1>Search Value: {searchValue}</h1>
-    )}
+      {filteredPosts.length > 0 && <Posts posts={filteredPosts} />}
 
-    <TextInput searchValue={searchValue} handleChange={handleChange} />
-    </div>
-
-    {filteredPosts.length === 0 && (
-      <p>No posts found</p>
-      )}
-
-    {filteredPosts.length > 0 && (
-      <Posts posts={filteredPosts} />
-    )}
-
-    <div className='button-container'>
-
-      {!searchValue && (
-        <Button 
-          text="Load More Posts"
-          onClick={loadMorePosts}
-          disabled={noMorePosts}
-        />
-      )}
-    </div>
-  </section>
-);
-}
+      <div className="button-container">
+        {!searchValue && <Button text="Load More Posts" onClick={loadMorePosts} disabled={noMorePosts} />}
+      </div>
+    </section>
+  );
+};
 
 export default Home;

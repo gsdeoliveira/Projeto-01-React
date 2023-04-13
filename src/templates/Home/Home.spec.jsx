@@ -1,14 +1,13 @@
 describe('<Home />', () => {
-  it('test one', () => { 
+  it('test one', () => {
     expect(1).toBe(1);
-   });
+  });
 
-  it('test two', () => { 
+  it('test two', () => {
     expect(1).toBe(1);
-   });
+  });
 
-  it('test three', () => { 
+  it('test three', () => {
     expect(1).toBe(1);
-   });
-
+  });
 });
